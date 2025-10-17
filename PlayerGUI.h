@@ -30,7 +30,7 @@ private:
     juce::Slider volumeSlider;
 
     std::unique_ptr<juce::FileChooser> fileChooser;
-    bool isLooping = false;  // Track loop state
+    bool isLooping = false;
 
     void loadAudioFile();
     void updateLoopButton();
