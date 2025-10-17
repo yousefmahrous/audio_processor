@@ -89,9 +89,9 @@ void PlayerAudio::setLooping(bool shouldLoop)
 {
     looping = shouldLoop;
 
-    // Update the reader source if it exists
     if (readerSource != nullptr)
     {
         readerSource->setLooping(looping);
     }
+
 }
