@@ -26,7 +26,7 @@ private:
     juce::TextButton loadButton{ "Load File" };
     juce::TextButton playButton{ "Play" };
     juce::TextButton stopButton{ "Stop" };
-    juce::TextButton loopButton{ "Loop: Off" };  // Changed button text to show state
+    juce::TextButton loopButton{ "Loop" };
     juce::Slider volumeSlider;
 
     std::unique_ptr<juce::FileChooser> fileChooser;
