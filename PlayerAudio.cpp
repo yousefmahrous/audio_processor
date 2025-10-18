@@ -93,5 +93,4 @@ void PlayerAudio::setLooping(bool shouldLoop)
     {
         readerSource->setLooping(looping);
     }
-
 }

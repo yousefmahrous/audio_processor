@@ -25,7 +25,6 @@ public:
     void setPosition(double position);
     void setGain(float gain);
 
-    // State query methods
     bool isPlaying() const { return transportSource.isPlaying(); }
     double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
     double getLengthInSeconds() const { return transportSource.getLengthInSeconds(); }
