@@ -31,6 +31,7 @@ private:
     juce::TextButton playButton{ "Play" };
     juce::TextButton stopButton{ "Stop" };
     juce::TextButton loopButton{ "Loop" };
+    juce::TextButton muteButton{ "Mute" };
 
     // A-B Looping buttons
     juce::TextButton loopAButton{ "Set A" };
