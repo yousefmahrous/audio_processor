@@ -1,10 +1,15 @@
-#include "PlayerGUI.h"
+﻿#include "PlayerGUI.h"
 
 PlayerGUI::PlayerGUI(PlayerAudio& audioPlayer)
     : playerAudio(audioPlayer)
 {
     // Setup buttons
-    for (auto* btn : { &loadButton, &playButton, &stopButton, &loopButton })
+    juce::TextButton* buttons[] = {
+        &loadButton, &playButton, &stopButton, &loopButton,
+        &loopAButton, &loopBButton, &abLoopButton, &clearLoopButton
+    };
+
+    for (auto* btn : buttons)
     {
         btn->addListener(this);
         addAndMakeVisible(btn);
@@ -27,14 +32,34 @@ PlayerGUI::PlayerGUI(PlayerAudio& audioPlayer)
     currentTimeLabel.setText("0:00", juce::dontSendNotification);
     currentTimeLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(currentTimeLabel);
+
     durationLabel.setText("0:00", juce::dontSendNotification);
     durationLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(durationLabel);
 
-    // Initialize loop button state
-    updateLoopButton();
+    // Setup loop points labels
+    loopStartLabel.setText("A: --:--", juce::dontSendNotification);
+    loopStartLabel.setJustificationType(juce::Justification::centred);
+    loopStartLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    addAndMakeVisible(loopStartLabel);
 
-    // Start timer for real-time updates (30ms interval for smooth updates)
+    loopEndLabel.setText("B: --:--", juce::dontSendNotification);
+    loopEndLabel.setJustificationType(juce::Justification::centred);
+    loopEndLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    addAndMakeVisible(loopEndLabel);
+
+    // Setup loop status label
+    loopStatusLabel.setText("Loop: Off", juce::dontSendNotification);
+    loopStatusLabel.setJustificationType(juce::Justification::centred);
+    loopStatusLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    addAndMakeVisible(loopStatusLabel);
+
+    // Initialize button states
+    updateLoopButton();
+    updateABLoopButton();
+    updateLoopPointsDisplay();
+
+    // Start timer for real-time updates
     startTimer(30);
 }
 
@@ -47,6 +72,7 @@ void PlayerGUI::resized()
 {
     auto area = getLocalBounds().reduced(10);
 
+    // Position area with time labels
     auto positionArea = area.removeFromTop(40);
     {
         currentTimeLabel.setBounds(positionArea.removeFromLeft(50));
@@ -54,18 +80,40 @@ void PlayerGUI::resized()
         positionSlider.setBounds(positionArea);
     }
 
-    auto buttonArea = area.removeFromTop(50);
+    // Loop points labels area
+    auto loopLabelsArea = area.removeFromTop(20);
+    {
+        loopStartLabel.setBounds(loopLabelsArea.removeFromLeft(60));
+        loopLabelsArea.removeFromLeft(10);
+        loopEndLabel.setBounds(loopLabelsArea.removeFromLeft(60));
+        loopLabelsArea.removeFromLeft(10);
+        loopStatusLabel.setBounds(loopLabelsArea.removeFromLeft(100));
+    }
+
+    // Buttons area
+    auto buttonArea = area.removeFromTop(60);
     int buttonWidth = 80;
-    int buttonHeight = 40;
     int margin = 10;
 
-    loadButton.setBounds(buttonArea.removeFromLeft(buttonWidth + 20));
-    buttonArea.removeFromLeft(margin);
-    playButton.setBounds(buttonArea.removeFromLeft(buttonWidth));
-    buttonArea.removeFromLeft(margin);
-    stopButton.setBounds(buttonArea.removeFromLeft(buttonWidth));
-    buttonArea.removeFromLeft(margin);
-    loopButton.setBounds(buttonArea.removeFromLeft(buttonWidth));
+    // First row of buttons
+    auto firstRow = buttonArea.removeFromTop(40);
+    loadButton.setBounds(firstRow.removeFromLeft(buttonWidth + 10));
+    firstRow.removeFromLeft(margin);
+    playButton.setBounds(firstRow.removeFromLeft(buttonWidth));
+    firstRow.removeFromLeft(margin);
+    stopButton.setBounds(firstRow.removeFromLeft(buttonWidth));
+    firstRow.removeFromLeft(margin);
+    loopButton.setBounds(firstRow.removeFromLeft(buttonWidth));
+
+    // Second row of buttons (A-B Looping)
+    auto secondRow = buttonArea.removeFromTop(40);
+    loopAButton.setBounds(secondRow.removeFromLeft(buttonWidth));
+    secondRow.removeFromLeft(margin);
+    loopBButton.setBounds(secondRow.removeFromLeft(buttonWidth));
+    secondRow.removeFromLeft(margin);
+    abLoopButton.setBounds(secondRow.removeFromLeft(buttonWidth));
+    secondRow.removeFromLeft(margin);
+    clearLoopButton.setBounds(secondRow.removeFromLeft(buttonWidth));
 
     volumeSlider.setBounds(area.reduced(0, 10));
 }
@@ -87,10 +135,32 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     }
     else if (button == &loopButton)
     {
-        // Toggle loop state
         isLooping = !isLooping;
         playerAudio.setLooping(isLooping);
         updateLoopButton();
+    }
+    else if (button == &loopAButton)
+    {
+        playerAudio.setLoopPointA();
+        updateLoopPointsDisplay();
+        updateABLoopButton();
+    }
+    else if (button == &loopBButton)
+    {
+        playerAudio.setLoopPointB();
+        updateLoopPointsDisplay();
+        updateABLoopButton();
+    }
+    else if (button == &abLoopButton)
+    {
+        playerAudio.toggleABLooping();
+        updateABLoopButton();
+    }
+    else if (button == &clearLoopButton)
+    {
+        playerAudio.clearLoopPoints();
+        updateABLoopButton();
+        updateLoopPointsDisplay();
     }
 }
 
@@ -102,7 +172,6 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
     }
     else if (slider == &positionSlider)
     {
-        //Handle position slider changes
         if (!isDraggingPositionSlider)
         {
             double newPosition = positionSlider.getValue() * playerAudio.getLengthInSeconds();
@@ -138,6 +207,35 @@ void PlayerGUI::updateLoopButton()
     }
 }
 
+void PlayerGUI::updateABLoopButton()
+{
+    bool hasPoints = playerAudio.hasLoopPoints();
+    bool isABLooping = playerAudio.isABLooping();
+
+    if (isABLooping) {
+        abLoopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::green);
+        loopStatusLabel.setText("Loop: ON", juce::dontSendNotification);
+        loopStatusLabel.setColour(juce::Label::textColourId, juce::Colours::green);
+    } else if (hasPoints) {
+        abLoopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::yellow);
+        loopStatusLabel.setText("Loop: READY", juce::dontSendNotification);
+        loopStatusLabel.setColour(juce::Label::textColourId, juce::Colours::yellow);
+    } else {
+        abLoopButton.setColour(juce::TextButton::buttonColourId, juce::Colours:: black);
+        loopStatusLabel.setText("Loop: OFF", juce::dontSendNotification);
+        loopStatusLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    }
+}
+
+void PlayerGUI::updateLoopPointsDisplay()
+{
+    double loopStart = playerAudio.getLoopStart();
+    double loopEnd = playerAudio.getLoopEnd();
+    loopStartLabel.setText("A: " + formatTime(loopStart), juce::dontSendNotification);
+    loopEndLabel.setText("B: " + formatTime(loopEnd), juce::dontSendNotification);
+    updateABLoopButton();
+}
+
 void PlayerGUI::loadAudioFile()
 {
     fileChooser = std::make_unique<juce::FileChooser>(
@@ -153,14 +251,14 @@ void PlayerGUI::loadAudioFile()
             if (file.existsAsFile())
             {
                 playerAudio.loadFile(file);
-                // Reset position slider when new file is loaded
                 positionSlider.setValue(0.0, juce::dontSendNotification);
                 updateTimeDisplays();
+                updateLoopPointsDisplay();
+                updateABLoopButton();
             }
         });
 }
 
-// Update time displays
 void PlayerGUI::updateTimeDisplays()
 {
     double currentTime = playerAudio.getCurrentPosition();
@@ -170,10 +268,9 @@ void PlayerGUI::updateTimeDisplays()
     durationLabel.setText(formatTime(duration), juce::dontSendNotification);
 }
 
-// Format seconds to MM:SS string
 juce::String PlayerGUI::formatTime(double seconds)
 {
-    if (seconds < 0) return "0:00";
+    if (seconds < 0) return "--:--";
 
     int totalSeconds = static_cast<int>(seconds);
     int minutes = totalSeconds / 60;

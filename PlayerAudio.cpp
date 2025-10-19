@@ -22,10 +22,18 @@ void PlayerAudio::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferTo
     {
         transportSource.getNextAudioBlock(bufferToFill);
 
-        // Handle looping
         if (looping && transportSource.hasStreamFinished())
         {
             transportSource.setPosition(0.0);
+        }
+
+        if (abLooping && hasLoopStart && hasLoopEnd)
+        {
+            double currentPos = transportSource.getCurrentPosition();
+            if (currentPos >= loopEnd)
+            {
+                transportSource.setPosition(loopStart);
+            }
         }
     }
     else
@@ -44,6 +52,7 @@ void PlayerAudio::loadFile(const juce::File& audioFile)
     transportSource.stop();
     transportSource.setSource(nullptr);
     readerSource.reset();
+    clearLoopPoints();
 
     if (audioFile.existsAsFile())
     {
@@ -55,7 +64,6 @@ void PlayerAudio::loadFile(const juce::File& audioFile)
                 nullptr,
                 reader->sampleRate);
 
-            // Enable looping on the reader source
             if (readerSource != nullptr)
             {
                 readerSource->setLooping(looping);
@@ -93,4 +101,44 @@ void PlayerAudio::setLooping(bool shouldLoop)
     {
         readerSource->setLooping(looping);
     }
+}
+
+void PlayerAudio::setLoopPointA()
+{
+    loopStart = transportSource.getCurrentPosition();
+    hasLoopStart = true;
+    if (hasLoopEnd && loopStart > loopEnd)
+    {
+        loopEnd = loopStart;
+    }
+}
+
+void PlayerAudio::setLoopPointB()
+{
+    loopEnd = transportSource.getCurrentPosition();
+    hasLoopEnd = true;
+    if (hasLoopStart && loopEnd < loopStart)
+    {
+        loopStart = loopEnd;
+    }
+}
+void PlayerAudio::toggleABLooping()
+{
+    if (hasLoopStart && hasLoopEnd)
+    {
+        abLooping = !abLooping;
+    }
+    else if (abLooping)
+    {
+        abLooping = false;
+    }
+}
+
+void PlayerAudio::clearLoopPoints()
+{
+    hasLoopStart = false;
+    hasLoopEnd = false;
+    abLooping = false;
+    loopStart = 0.0;
+    loopEnd = 0.0;
 }

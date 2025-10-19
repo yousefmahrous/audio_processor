@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <JuceHeader.h>
 
@@ -18,9 +18,20 @@ public:
     void start();
     void stop();
 
-    //Loop Feature
+    // Loop Features
     void setLooping(bool shouldLoop);
     bool isLooping() const { return looping; }
+
+    // A-B Looping methods
+    void setLoopPointA();
+    void setLoopPointB();
+    void toggleABLooping();
+    bool isABLooping() const { return abLooping; }
+    void clearLoopPoints();
+
+    double getLoopStart() const { return loopStart; }
+    double getLoopEnd() const { return loopEnd; }
+    bool hasLoopPoints() const { return hasLoopStart && hasLoopEnd; }
 
     void setPosition(double position);
     void setGain(float gain);
@@ -34,6 +45,11 @@ private:
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
     bool looping = false;
+    bool abLooping = false;
+    double loopStart = 0.0;
+    double loopEnd = 0.0;
+    bool hasLoopStart = false;
+    bool hasLoopEnd = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerAudio)
 };

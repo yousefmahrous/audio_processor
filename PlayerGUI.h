@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <JuceHeader.h>
 #include "PlayerAudio.h"
@@ -6,7 +6,7 @@
 class PlayerGUI : public juce::Component,
     public juce::Button::Listener,
     public juce::Slider::Listener,
-    public juce::Timer  // Add timer for real-time updates
+    public juce::Timer
 {
 public:
     PlayerGUI(PlayerAudio& audioPlayer);
@@ -31,6 +31,17 @@ private:
     juce::TextButton playButton{ "Play" };
     juce::TextButton stopButton{ "Stop" };
     juce::TextButton loopButton{ "Loop" };
+
+    // A-B Looping buttons
+    juce::TextButton loopAButton{ "Set A" };
+    juce::TextButton loopBButton{ "Set B" };
+    juce::TextButton abLoopButton{ "A-B Loop" };
+    juce::TextButton clearLoopButton{ "Clear" };
+    // Loop points labels
+    juce::Label loopStartLabel;
+    juce::Label loopEndLabel;
+    juce::Label loopStatusLabel;
+
     juce::Slider volumeSlider;
 
     // Position slider and time displays
@@ -44,6 +55,8 @@ private:
 
     void loadAudioFile();
     void updateLoopButton();
+    void updateABLoopButton();
+    void updateLoopPointsDisplay();
     void updateTimeDisplays();
     juce::String formatTime(double seconds);
 
