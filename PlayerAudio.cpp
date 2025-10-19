@@ -134,6 +134,27 @@ void PlayerAudio::toggleABLooping()
     }
 }
 
+bool PlayerAudio::isMuted() const
+{
+    return muted;
+}
+
+void PlayerAudio::Muted()
+{
+    if (!muted)
+    {
+       
+        previousGain = transportSource.getGain();
+        transportSource.setGain(0.0f);
+        muted = true;
+    }
+    else
+    {
+        transportSource.setGain(previousGain);
+        muted = false;
+    }
+}
+
 void PlayerAudio::clearLoopPoints()
 {
     hasLoopStart = false;
@@ -141,4 +162,5 @@ void PlayerAudio::clearLoopPoints()
     abLooping = false;
     loopStart = 0.0;
     loopEnd = 0.0;
+
 }
