@@ -178,6 +178,7 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
     if (slider == &volumeSlider)
     {
         playerAudio.setGain(static_cast<float>(slider->getValue()));
+        muteButton.setButtonText(playerAudio.isMuted() ? "Unmute" : "Mute");
     }
     else if (slider == &positionSlider)
     {

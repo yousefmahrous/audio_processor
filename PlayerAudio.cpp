@@ -91,7 +91,14 @@ void PlayerAudio::setPosition(double position)
 
 void PlayerAudio::setGain(float gain)
 {
+    if (muted)
+    {
+        muted = false;
+    }
+
     transportSource.setGain(gain);
+    previousGain = gain;
+
 }
 
 void PlayerAudio::setLooping(bool shouldLoop)
@@ -142,17 +149,16 @@ bool PlayerAudio::isMuted() const
 
 void PlayerAudio::Muted()
 {
-    if (!muted)
+    if (muted)
     {
-       
-        previousGain = transportSource.getGain();
-        transportSource.setGain(0.0f);
-        muted = true;
+        muted = false;
+        transportSource.setGain(previousGain);
     }
     else
     {
-        transportSource.setGain(previousGain);
-        muted = false;
+        previousGain = transportSource.getGain();
+        muted = true;
+        transportSource.setGain(0.0f);
     }
 }
 
