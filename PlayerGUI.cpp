@@ -115,7 +115,10 @@ void PlayerGUI::resized()
     secondRow.removeFromLeft(margin);
     clearLoopButton.setBounds(secondRow.removeFromLeft(buttonWidth));
 
-    volumeSlider.setBounds(area.reduced(0, 10));
+    auto soundArea = area.removeFromTop(40);
+    volumeSlider.setBounds(soundArea.removeFromLeft(200));
+    soundArea.removeFromLeft(10);
+    muteButton.setBounds(soundArea.removeFromLeft(80));
 }
 
 void PlayerGUI::buttonClicked(juce::Button* button)
@@ -162,6 +165,11 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         updateABLoopButton();
         updateLoopPointsDisplay();
     }
+    else if (button == &muteButton)
+   {
+    playerAudio.Muted();
+    muteButton.setButtonText(playerAudio.isMuted() ? "Unmute" : "Mute");
+   }
 }
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
@@ -277,4 +285,5 @@ juce::String PlayerGUI::formatTime(double seconds)
     int secs = totalSeconds % 60;
 
     return juce::String::formatted("%d:%02d", minutes, secs);
+
 }
