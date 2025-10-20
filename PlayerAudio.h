@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <JuceHeader.h>
 
@@ -40,8 +40,8 @@ public:
     double getCurrentPosition() const { return transportSource.getCurrentPosition(); }
     double getLengthInSeconds() const { return transportSource.getLengthInSeconds(); }
 
-   void Muted();
-   bool isMuted() const;
+    void Muted();
+    bool isMuted() const;
 
 private:
     juce::AudioFormatManager formatManager;
@@ -54,10 +54,8 @@ private:
     bool hasLoopStart = false;
     bool hasLoopEnd = false;
 
-
     bool muted = false;
     float previousGain = 1.0f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerAudio)
-
 };

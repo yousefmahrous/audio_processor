@@ -1,4 +1,4 @@
-﻿#include "PlayerAudio.h"
+#include "PlayerAudio.h"
 
 PlayerAudio::PlayerAudio()
 {
@@ -71,6 +71,7 @@ void PlayerAudio::loadFile(const juce::File& audioFile)
         }
     }
 }
+
 
 void PlayerAudio::start()
 {
@@ -162,5 +163,4 @@ void PlayerAudio::clearLoopPoints()
     abLooping = false;
     loopStart = 0.0;
     loopEnd = 0.0;
-
 }
