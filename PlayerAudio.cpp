@@ -97,8 +97,6 @@ void PlayerAudio::setGain(float gain)
     }
 
     transportSource.setGain(gain);
-    previousGain = gain;
-
 }
 
 void PlayerAudio::setLooping(bool shouldLoop)
@@ -169,4 +167,5 @@ void PlayerAudio::clearLoopPoints()
     abLooping = false;
     loopStart = 0.0;
     loopEnd = 0.0;
+
 }
