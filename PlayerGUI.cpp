@@ -1,4 +1,4 @@
-﻿#include "PlayerGUI.h"
+#include "PlayerGUI.h"
 
 PlayerGUI::PlayerGUI(PlayerAudio& audioPlayer)
     : playerAudio(audioPlayer)
@@ -6,7 +6,8 @@ PlayerGUI::PlayerGUI(PlayerAudio& audioPlayer)
     // Setup buttons
     juce::TextButton* buttons[] = {
         &loadButton, &playButton, &stopButton, &loopButton,
-        &loopAButton, &loopBButton, &abLoopButton, &clearLoopButton
+        &loopAButton, &loopBButton, &abLoopButton, &clearLoopButton,
+        &muteButton
     };
 
     for (auto* btn : buttons)
@@ -166,10 +167,10 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         updateLoopPointsDisplay();
     }
     else if (button == &muteButton)
-   {
-    playerAudio.Muted();
-    muteButton.setButtonText(playerAudio.isMuted() ? "Unmute" : "Mute");
-   }
+    {
+        playerAudio.Muted();
+        muteButton.setButtonText(playerAudio.isMuted() ? "Unmute" : "Mute");
+    }
 }
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
@@ -224,12 +225,14 @@ void PlayerGUI::updateABLoopButton()
         abLoopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::green);
         loopStatusLabel.setText("Loop: ON", juce::dontSendNotification);
         loopStatusLabel.setColour(juce::Label::textColourId, juce::Colours::green);
-    } else if (hasPoints) {
+    }
+    else if (hasPoints) {
         abLoopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::yellow);
         loopStatusLabel.setText("Loop: READY", juce::dontSendNotification);
         loopStatusLabel.setColour(juce::Label::textColourId, juce::Colours::yellow);
-    } else {
-        abLoopButton.setColour(juce::TextButton::buttonColourId, juce::Colours:: black);
+    }
+    else {
+        abLoopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::black);
         loopStatusLabel.setText("Loop: OFF", juce::dontSendNotification);
         loopStatusLabel.setColour(juce::Label::textColourId, juce::Colours::white);
     }
@@ -285,5 +288,4 @@ juce::String PlayerGUI::formatTime(double seconds)
     int secs = totalSeconds % 60;
 
     return juce::String::formatted("%d:%02d", minutes, secs);
-
 }
