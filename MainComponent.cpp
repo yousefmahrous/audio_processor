@@ -4,7 +4,7 @@ MainComponent::MainComponent()
     : playerGUI(playerAudio)
 {
     addAndMakeVisible(playerGUI);
-    setSize(600, 200);
+    setSize(800, 600);
     setAudioChannels(0, 2);
 }
 
