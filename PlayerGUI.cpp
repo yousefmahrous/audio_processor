@@ -312,3 +312,4 @@ juce::String PlayerGUI::formatTime(double seconds)
     return juce::String::formatted("%d:%02d", minutes, secs);
 
 }
+
