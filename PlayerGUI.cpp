@@ -5,9 +5,9 @@ PlayerGUI::PlayerGUI(PlayerAudio& audioPlayer)
 {
     // Setup buttons
     juce::TextButton* buttons[] = {
-        &loadButton, &playButton, &stopButton, &loopButton,
+        &loadButton, &playButton, &pauseButton, &stopButton, &loopButton,
         &loopAButton, &loopBButton, &abLoopButton, &clearLoopButton,
-        &muteButton
+        &muteButton, &goToStartButton, &goToEndButton
     };
 
     for (auto* btn : buttons)
@@ -102,7 +102,13 @@ void PlayerGUI::resized()
     firstRow.removeFromLeft(margin);
     playButton.setBounds(firstRow.removeFromLeft(buttonWidth));
     firstRow.removeFromLeft(margin);
+    pauseButton.setBounds(firstRow.removeFromLeft(buttonWidth));
+    firstRow.removeFromLeft(margin);
     stopButton.setBounds(firstRow.removeFromLeft(buttonWidth));
+    firstRow.removeFromLeft(margin);
+    goToStartButton.setBounds(firstRow.removeFromLeft(buttonWidth));
+    firstRow.removeFromLeft(margin);
+    goToEndButton.setBounds(firstRow.removeFromLeft(buttonWidth));
     firstRow.removeFromLeft(margin);
     loopButton.setBounds(firstRow.removeFromLeft(buttonWidth));
 
@@ -170,6 +176,21 @@ void PlayerGUI::buttonClicked(juce::Button* button)
     {
         playerAudio.Muted();
         muteButton.setButtonText(playerAudio.isMuted() ? "Unmute" : "Mute");
+    }
+    else if (button == &pauseButton)
+    {
+        playerAudio.stop();
+    }
+    else if (button == &goToStartButton)
+    {
+        playerAudio.setPosition(0.0);
+        updateTimeDisplays();
+    }
+    else if (button == &goToEndButton)
+    {
+        double endPosition = playerAudio.getLengthInSeconds();
+        playerAudio.setPosition(endPosition);
+        updateTimeDisplays();
     }
 }
 
@@ -289,4 +310,5 @@ juce::String PlayerGUI::formatTime(double seconds)
     int secs = totalSeconds % 60;
 
     return juce::String::formatted("%d:%02d", minutes, secs);
+
 }
