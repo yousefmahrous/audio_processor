@@ -1,13 +1,13 @@
-#include "PlayerGUI.h"
+﻿#include "PlayerGUI.h"
 
 PlayerGUI::PlayerGUI(PlayerAudio& audioPlayer)
     : playerAudio(audioPlayer)
 {
     // Setup buttons
     juce::TextButton* buttons[] = {
-        &loadButton, &playButton, &pauseButton, &stopButton, &loopButton,
+        &loadButton, &playButton, &stopButton, &loopButton,
         &loopAButton, &loopBButton, &abLoopButton, &clearLoopButton,
-        &muteButton, &goToStartButton, &goToEndButton
+        &muteButton
     };
 
     for (auto* btn : buttons)
@@ -102,13 +102,7 @@ void PlayerGUI::resized()
     firstRow.removeFromLeft(margin);
     playButton.setBounds(firstRow.removeFromLeft(buttonWidth));
     firstRow.removeFromLeft(margin);
-    pauseButton.setBounds(firstRow.removeFromLeft(buttonWidth));
-    firstRow.removeFromLeft(margin);
     stopButton.setBounds(firstRow.removeFromLeft(buttonWidth));
-    firstRow.removeFromLeft(margin);
-    goToStartButton.setBounds(firstRow.removeFromLeft(buttonWidth));
-    firstRow.removeFromLeft(margin);
-    goToEndButton.setBounds(firstRow.removeFromLeft(buttonWidth));
     firstRow.removeFromLeft(margin);
     loopButton.setBounds(firstRow.removeFromLeft(buttonWidth));
 
@@ -177,21 +171,6 @@ void PlayerGUI::buttonClicked(juce::Button* button)
         playerAudio.Muted();
         muteButton.setButtonText(playerAudio.isMuted() ? "Unmute" : "Mute");
     }
-    else if (button == &pauseButton)
-    {
-        playerAudio.stop();
-    }
-    else if (button == &goToStartButton)
-    {
-        playerAudio.setPosition(0.0);
-        updateTimeDisplays();
-    }
-    else if (button == &goToEndButton)
-    {
-        double endPosition = playerAudio.getLengthInSeconds();
-        playerAudio.setPosition(endPosition);
-        updateTimeDisplays();
-    }
 }
 
 void PlayerGUI::sliderValueChanged(juce::Slider* slider)
@@ -199,7 +178,6 @@ void PlayerGUI::sliderValueChanged(juce::Slider* slider)
     if (slider == &volumeSlider)
     {
         playerAudio.setGain(static_cast<float>(slider->getValue()));
-        muteButton.setButtonText(playerAudio.isMuted() ? "Unmute" : "Mute");
     }
     else if (slider == &positionSlider)
     {
@@ -310,5 +288,4 @@ juce::String PlayerGUI::formatTime(double seconds)
     int secs = totalSeconds % 60;
 
     return juce::String::formatted("%d:%02d", minutes, secs);
-
 }

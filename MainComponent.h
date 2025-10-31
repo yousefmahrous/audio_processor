@@ -21,7 +21,10 @@ public:
 
 private:
     PlayerAudio playerAudio;
+    PlayerAudio playerAudio2;
+
     PlayerGUI playerGUI;
+    PlayerGUI playerGUI2;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };

@@ -1,4 +1,4 @@
-#include "PlayerAudio.h"
+﻿#include "PlayerAudio.h"
 
 PlayerAudio::PlayerAudio()
 {
@@ -72,7 +72,6 @@ void PlayerAudio::loadFile(const juce::File& audioFile)
     }
 }
 
-
 void PlayerAudio::start()
 {
     transportSource.start();
@@ -91,11 +90,6 @@ void PlayerAudio::setPosition(double position)
 
 void PlayerAudio::setGain(float gain)
 {
-    if (muted)
-    {
-        muted = false;
-    }
-
     transportSource.setGain(gain);
 }
 
@@ -147,16 +141,17 @@ bool PlayerAudio::isMuted() const
 
 void PlayerAudio::Muted()
 {
-    if (muted)
+    if (!muted)
     {
-        muted = false;
-        transportSource.setGain(previousGain);
+
+        previousGain = transportSource.getGain();
+        transportSource.setGain(0.0f);
+        muted = true;
     }
     else
     {
-        previousGain = transportSource.getGain();
-        muted = true;
-        transportSource.setGain(0.0f);
+        transportSource.setGain(previousGain);
+        muted = false;
     }
 }
 

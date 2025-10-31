@@ -32,9 +32,6 @@ private:
     juce::TextButton stopButton{ "Stop" };
     juce::TextButton loopButton{ "Loop" };
     juce::TextButton muteButton{ "Mute" };
-    juce::TextButton pauseButton{ "Pause" };
-    juce::TextButton goToStartButton{ "Start" };
-    juce::TextButton goToEndButton{ "End" };
 
     // A-B Looping buttons
     juce::TextButton loopAButton{ "Set A" };
@@ -65,5 +62,4 @@ private:
     juce::String formatTime(double seconds);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlayerGUI)
-
 };
